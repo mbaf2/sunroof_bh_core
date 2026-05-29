@@ -5,12 +5,15 @@ import rasterio
 
 # Identificador do tile
 tile = sys.argv[1] if len(sys.argv) > 1 else "5250"
-work_dir = Path(__file__).resolve().parent.parent / "Teste" / f"Resultados_{tile}"
+
+# ==============================================================================
+# AJUSTE DE ENDEREÇAMENTO GERAL - ARQUITETURA GITHUB / REPOSITÓRIO
+# Subimos 2 níveis (.parents[2]) para sair de Python/sunroof_bh_core,
+# apontamos para a nova pasta "Data" e corrigimos a nomenclatura do MDS.
+# ==============================================================================
+work_dir = Path(__file__).resolve().parents[2] / "Data" / f"Resultados_{tile}"
   
-# ==============================================================================
-# CORREÇÃO DE NOMENCLATURA: Aponta para o arquivo gerado pelo novo dsm.py
-# ==============================================================================
-f_mds = work_dir / f"RASTER_MDS_Buildings_{tile}.tif"
+f_mds = work_dir / f"RASTER_MDS_{tile}.tif"  # Corrigido para o padrão unificado da esteira
 f_out = work_dir / f"RASTER_Slope_{tile}.tif"
   
 if not f_mds.exists():

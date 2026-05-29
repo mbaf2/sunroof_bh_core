@@ -6,14 +6,16 @@ import rasterio
 
 # Identificador do quadrante
 tile = sys.argv[1] if len(sys.argv) > 1 else "5250"
-tile_dir = Path(__file__).resolve().parent.parent / "Teste" / f"Resultados_{tile}"
-  
+
 # ==============================================================================
-# NOMENCLATURA UNIFICADA: MDS apontando para o padrão correto RASTER_MDS_
+# AJUSTE DE ENDEREÇAMENTO GERAL - ARQUITETURA GITHUB / REPOSITÓRIO
+# Subimos 2 níveis (.parents[2]) para sair de Python/sunroof_bh_core,
+# apontamos para a nova pasta "Data" e unificamos a nomenclatura do MDS.
 # ==============================================================================
+tile_dir = Path(__file__).resolve().parents[2] / "Data" / f"Resultados_{tile}"
   
 src_files = {
-    "mds": tile_dir / f"RASTER_MDS_Buildings_{tile}.tif", # Alterado aqui!
+    "mds": tile_dir / f"RASTER_MDS_{tile}.tif", # Corrigido para o padrão unificado da esteira
     "slope": tile_dir / f"RASTER_Slope_{tile}.tif",
     "aspect": tile_dir / f"RASTER_Aspect_{tile}.tif"
 }

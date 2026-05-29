@@ -10,9 +10,13 @@ from pathlib import Path
 import numpy as np
 import time
 
-# Configs de diretório
+# ==============================================================================
+# AJUSTE DE ENDEREÇAMENTO GERAL - ARQUITETURA GITHUB / REPOSITÓRIO
+# Como este script roda dentro de Python/sunroof_bh_core, subimos 2 níveis (.parents[1])
+# para encontrar a raiz do projeto e alteramos a pasta de "Teste" para "Data"
+# ==============================================================================
 BASE_DIR = Path(__file__).resolve().parent
-TEST_DIR = BASE_DIR.parent / "Teste"
+DATA_DIR = BASE_DIR.parents[1] / "Data"
     
 # Configuração do processamento
 tiles = [
@@ -413,27 +417,27 @@ print("-" * 50)
 for tile in tiles:
     t0_global = time.time()
     
-    out_dir = TEST_DIR / f"Resultados_{tile}"
+    out_dir = DATA_DIR / f"Resultados_{tile}"
     os.makedirs(out_dir, exist_ok=True)
     
-    # Busca por fontes MDS/MDT
-    mds_xyz = next((TEST_DIR / "MDS").glob(f"MDS_{tile}*.xyz"), TEST_DIR / "MDS" / f"MDS_{tile}.xyz")
-    mdt_xyz = next((TEST_DIR / "MDT").glob(f"MDT_{tile}*.xyz"), TEST_DIR / "MDT" / f"MDT_{tile}.xyz")
+    # Busca por fontes MDS/MDT dentro da nova pasta Data
+    mds_xyz = next((DATA_DIR / "MDS").glob(f"MDS_{tile}*.xyz"), DATA_DIR / "MDS" / f"MDS_{tile}.xyz")
+    mdt_xyz = next((DATA_DIR / "MDT").glob(f"MDT_{tile}*.xyz"), DATA_DIR / "MDT" / f"MDT_{tile}.xyz")
     
     print(f"\n>> Iniciando Tile: {tile}")
     
     # Garantia de insumos (converte se necessário)
     if not mds_xyz.exists():
         print(f"  MDS .xyz não encontrado. Buscando .las...")
-        mds_xyz = TEST_DIR / "MDS" / f"MDS_{tile}.xyz"
-        if not convert_las_to_xyz(TEST_DIR / "MDS", tile, mds_xyz):
+        mds_xyz = DATA_DIR / "MDS" / f"MDS_{tile}.xyz"
+        if not convert_las_to_xyz(DATA_DIR / "MDS", tile, mds_xyz):
             print(f"  [ERRO] Sem fonte MDS para o tile {tile}.")
             continue
             
     if not mdt_xyz.exists():
         print(f"  MDT .xyz não encontrado. Buscando .las...")
-        mdt_xyz = TEST_DIR / "MDT" / f"MDT_{tile}.xyz"
-        if not convert_las_to_xyz(TEST_DIR / "MDT", tile, mdt_xyz):
+        mdt_xyz = DATA_DIR / "MDT" / f"MDT_{tile}.xyz"
+        if not convert_las_to_xyz(DATA_DIR / "MDT", tile, mdt_xyz):
             print(f"  [ERRO] Sem fonte MDT para o tile {tile}.")
             continue
 

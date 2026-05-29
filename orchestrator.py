@@ -5,9 +5,13 @@ from pathlib import Path
 import numpy as np
 import time
 
-# Configuração de caminhos
+# ==============================================================================
+# AJUSTE DE ENDEREÇAMENTO GERAL - ARQUITETURA GITHUB / REPOSITÓRIO
+# Como este script roda dentro de Python/sunroof_bh_core, subimos 2 níveis (.parents[1])
+# para encontrar a raiz do projeto e alteramos a pasta de "Teste" para "Data"
+# ==============================================================================
 BASE_DIR = Path(__file__).resolve().parent
-ROOT_DIR = BASE_DIR.parent / "Teste"
+ROOT_DIR = BASE_DIR.parents[1] / "Data"
 
 tiles = [
     "5050",
@@ -72,7 +76,7 @@ for tile in tiles:
     out_path = ROOT_DIR / f"Resultados_{tile}"
     os.makedirs(out_path, exist_ok=True)
     
-    # Busca por fontes MDS/MDT
+    # Busca por fontes MDS/MDT dentro da nova pasta Data
     f_mds = next((ROOT_DIR / "MDS").glob(f"MDS_{tile}*.xyz"), ROOT_DIR / "MDS" / f"MDS_{tile}.xyz")
     f_mdt = next((ROOT_DIR / "MDT").glob(f"MDT_{tile}*.xyz"), ROOT_DIR / "MDT" / f"MDT_{tile}.xyz")
     

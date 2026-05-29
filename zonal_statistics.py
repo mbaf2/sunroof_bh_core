@@ -9,7 +9,10 @@ from pathlib import Path
 
 # Config inicial
 tile_id = sys.argv[1] if len(sys.argv) > 1 else "5250"
-root_dir = Path(__file__).resolve().parents[1] / "Teste" / f"Resultados_{tile_id}"
+
+# AJUSTE DE ENDEREÇAMENTO: Subimos 2 níveis (.parents[2]) para sair de Python/sunroof_bh_core
+# e alteramos o nome do diretório de "Teste" para "Data"
+root_dir = Path(__file__).resolve().parents[2] / "Data" / f"Resultados_{tile_id}"
 
 files = {
     "vector": root_dir / f"buildings_zone_{tile_id}.gpkg",
@@ -30,13 +33,13 @@ gdf = gpd.read_file(files["vector"])
 out_path = root_dir / f"buildings_sunroof_pronto_{tile_id}.gpkg"
 
 if gdf.empty:
-    print(f"Aviso: o quadrante {tile_id} n�o possui edificac�es vetorizadas.")
-    cols = ['h_mean','h_max', 'slope_mean', 'aspect_pred', 'kwh_m2_avg', 'kwh_total_ yr', 'area_util_m2', 'area_tot_m2']
+    print(f"Aviso: o quadrante {tile_id} não possui edificações vetorizadas.")
+    cols = ['h_mean','h_max', 'slope_mean', 'aspect_pred', 'kwh_m2_avg', 'kwh_total_yr', 'area_util_m2', 'area_tot_m2']
     for col in cols: 
         gdf[col] = None
     gdf.to_file(out_path, driver="GPKG")
     print(f"Ok: {out_path.name} (Salvo vazio por consistencia)")
-    sys.exit(0)	
+    sys.exit(0) 
 
 THRESHOLD_SOLAR = 1200.0 
 results = []
@@ -151,4 +154,3 @@ for caminho in arquivos_para_deletar:
         print(f"  [Aviso] Falha ao deletar {caminho.name}: {e}")
 
 print(f"[Limpeza] Concluída. {removidos} rasters apagados. Apenas a irradiação e o gpkg foram mantidos!\n")
-  
