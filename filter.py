@@ -4,7 +4,13 @@ import geopandas as gpd
 
 # Setup de I/O
 tile = sys.argv[1] if len(sys.argv) > 1 else "5250"
-res_dir = Path(__file__).resolve().parents[1] / "Teste" / f"Resultados_{tile}"
+
+# ==============================================================================
+# AJUSTE DE ENDEREÇAMENTO GERAL - ARQUITETURA GITHUB / REPOSITÓRIO
+# Subimos 2 níveis (.parents[2]) para sair de Python/sunroof_bh_core
+# e alteramos o nome do diretório de "Teste" para "Data"
+# ==============================================================================
+res_dir = Path(__file__).resolve().parents[2] / "Data" / f"Resultados_{tile}"
 
 f_in = res_dir / f"buildings_sunroof_pronto_{tile}.gpkg"
 f_out = res_dir / f"buildings_sunroof_FILTRADO_{tile}.gpkg"

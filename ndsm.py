@@ -5,7 +5,13 @@ import rasterio
 
 # Config de caminhos
 tile = sys.argv[1] if len(sys.argv) > 1 else "5250"
-res_dir = Path(__file__).resolve().parents[1] / "Teste" / f"Resultados_{tile}"
+
+# ==============================================================================
+# AJUSTE DE ENDEREÇAMENTO GERAL - ARQUITETURA GITHUB / REPOSITÓRIO
+# Subimos 2 níveis (.parents[2]) para sair de Python/sunroof_bh_core
+# e alteramos o nome do diretório de "Teste" para "Data"
+# ==============================================================================
+res_dir = Path(__file__).resolve().parents[2] / "Data" / f"Resultados_{tile}"
 
 # Nomes corrigidos e padronizados
 f_mds = res_dir / f"RASTER_MDS_{tile}.tif"

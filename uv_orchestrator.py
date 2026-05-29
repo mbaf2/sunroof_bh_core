@@ -20,6 +20,7 @@ DATA_DIR = BASE_DIR.parents[1] / "Data"
     
 # Configuração do processamento
 tiles = [
+        '''
           "4243",
           "4244",
           "4245",
@@ -289,6 +290,7 @@ tiles = [
           "5546",
           "5547",
           "5548",
+          '''
           "5549",
           "5550",
           "5551",
@@ -309,7 +311,8 @@ tiles = [
           "5647",
           "5648",
           "5649",
-          "5650",
+          "5650"
+          '''
           "5651",
           "5652",
           "5653",
@@ -367,9 +370,10 @@ tiles = [
           "6057",
           "6058",
           "6061"
+          '''
          ]
 
-GRID_RES = 0.25
+GRID_RES = 1
 
 pipeline = [
     "dsm.py", "dtm.py", "intensity.py", "ndsm.py", 

@@ -5,13 +5,16 @@ import rasterio
 
 # Identificador do tile
 tile = sys.argv[1] if len(sys.argv) > 1 else "5250"
-work_dir = Path(__file__).resolve().parent.parent / "Teste" / f"Resultados_{tile}"
-  
-# ==============================================================================
-# NOMENCLATURA PADRONIZADA: Aponta para as saídas reais e idênticas do pipeline
-# ==============================================================================
 
-f_mds = work_dir / f"RASTER_MDS_Buildings_{tile}.tif"
+# ==============================================================================
+# AJUSTE DE ENDEREÇAMENTO GERAL - ARQUITETURA GITHUB / REPOSITÓRIO
+# Subimos 2 níveis (.parents[2]) para sair de Python/sunroof_bh_core,
+# apontamos para a nova pasta "Data" e unificamos a nomenclatura do MDS.
+# ==============================================================================
+work_dir = Path(__file__).resolve().parents[2] / "Data" / f"Resultados_{tile}"
+  
+# Nomenclatura unificada para ler o MDS real gerado na esteira
+f_mds = work_dir / f"RASTER_MDS_{tile}.tif"
 f_slp = work_dir / f"RASTER_Slope_{tile}.tif"
 f_out = work_dir / f"RASTER_Aspect_{tile}.tif"
 

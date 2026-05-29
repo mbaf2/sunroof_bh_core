@@ -8,19 +8,22 @@ from pathlib import Path
 import rasterio
 from rasterio.merge import merge
   
-# 1. MAPEAMENTO CORRETO DOS DIRETÓRIOS (SUBINDO PARA A RAIZ 'PROJETO_BH')
-# __file__.resolve().parent é 'Python'. O próximo .parent sobe para 'projeto_bh'
-raiz_projeto = Path(__file__).resolve().parent.parent
-base_dir = raiz_projeto / "Teste"
+# ==============================================================================
+# AJUSTE DE ENDEREÇAMENTO GERAL - ARQUITETURA GITHUB / REPOSITÓRIO
+# Como este script roda dentro de Python/sunroof_bh_core, subimos 2 níveis (.parents[1])
+# para encontrar a raiz do projeto (projeto_bh) e alteramos a pasta de "Teste" para "Data"
+# ==============================================================================
+raiz_projeto = Path(__file__).resolve().parents[1]
+base_dir = raiz_projeto / "Data"
 
 # O arquivo final mosaico será gerado diretamente na sua raiz (projeto_bh)
-raster_mosaico_final = raiz_projeto / "BH_Irradiacao_Completa_50cm.tif"
+raster_mosaico_final = raiz_projeto / "BH_Irradiacao_Completa_25cm.tif"
 
 print(f">> Buscando a pasta de dados em: {base_dir.absolute()}")
 
-# Se a pasta 'Teste' não for encontrada na raiz, interrompe com aviso claro
+# Se a pasta 'Data' não for encontrada na raiz, interrompe com aviso claro
 if not base_dir.exists():
-    sys.exit(f"Erro Crítico: A pasta 'Teste' não foi localizada em {base_dir.absolute()}")
+    sys.exit(f"Erro Crítico: A pasta 'Data' não foi localizada em {base_dir.absolute()}")
 
 print(f">> Varrendo subpastas com resultados dentro de: {base_dir.name}...")
 
@@ -30,7 +33,7 @@ for p in base_dir.glob("Resultados_*/*.tif"):
     nome_minusculo = p.name.lower()
     
     # FORMATO SEGURO: Captura arquivos que começam com 'raster_i'
-    # Isola perfeitamente o 'RASTER_Irradiacao_XXXX.tif' sem brigar com acentos no Windows
+    # Isola perfeitamente o 'RASTER_Irradiacao_XXXX.tif' sem brigar com acentos no Windows/Pop!_OS
     if nome_minusculo.startswith("raster_i"):
         lista_rasters.append(p)
 
@@ -49,7 +52,7 @@ print(f"-> Sucesso: {len(lista_rasters)} quadrantes de irradiação localizados 
 
 # 3. CRIA O MOSAICO GIGANTE (MERGE)
 print("\n>> Combinando os quadrantes em um único arquivo mosaico da cidade...")
-print("   (Isso consome processamento e RAM, aguarde um instante...)")
+print("   (Aproveitando os 32GB de RAM do computador novo para o processamento, aguarde...)")
 
 # Abre os arquivos de forma segura
 arquivos_abertos = [rasterio.open(f) for f in lista_rasters]
@@ -71,7 +74,7 @@ meta.update({
 with rasterio.open(raster_mosaico_final, "w", **meta) as dest:
     dest.write(mosaico)
 
-# Fecha os descritores para liberar a memória RAM de 8GB
+# Fecha os descritores para liberar a memória RAM
 for ras in arquivos_abertos:
     ras.close()
 

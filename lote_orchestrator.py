@@ -11,9 +11,13 @@ from pathlib import Path
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-# Configs de diretório
+# ==============================================================================
+# AJUSTE DE ENDEREÇAMENTO GERAL - ARQUITETURA GITHUB / REPOSITÓRIO
+# Como este script roda dentro de Python/sunroof_bh_core, subimos 2 níveis (.parents[1])
+# para encontrar a raiz do projeto (projeto_bh) e alteramos a pasta de "Teste" para "Data"
+# ==============================================================================
 BASE_DIR = Path(__file__).resolve().parent
-TEST_DIR = BASE_DIR.parent / "Teste"
+DATA_DIR = BASE_DIR.parents[1] / "Data"
 
 # RESOLUÇÃO ULTRA-DENSA (Cada quadrante tem 4x mais pixels que em 0.5m)
 GRID_RES = 0.25
@@ -28,8 +32,8 @@ PIPELINE = [
 ]
   
 # Lista consolidada de quadrantes
-
 TILES = [
+        """        
           "4243",
           "4244",
           "4245",
@@ -49,6 +53,7 @@ TILES = [
           "4540",
           "4541",
           "4542",
+        """
           "4543",
           "4544",
           "4545",
@@ -282,6 +287,7 @@ TILES = [
           "5449",
           "5450",
           "5451",
+          '''
           "5452",
           "5453",
           "5454",
@@ -376,6 +382,7 @@ TILES = [
           "5962",
           "6057",
           "6058",
+          '''
           "6061"
 ]
 
@@ -383,14 +390,14 @@ TILES = [
 def processar_single_tile(tile_id):
     """Worker de alta performance executado de forma paralela por núcleo"""
     t0_tile = time.time()
-    out_dir = TEST_DIR / f"Resultados_{tile_id}"
+    out_dir = DATA_DIR / f"Resultados_{tile_id}"
     out_dir.mkdir(parents=True, exist_ok=True)
     
-    mds_xyz = next((TEST_DIR / "MDS").glob(f"MDS_{tile_id}*.xyz"), TEST_DIR / "MDS" / f"MDS_{tile_id}.xyz")
-    mdt_xyz = next((TEST_DIR / "MDT").glob(f"MDT_{tile_id}*.xyz"), TEST_DIR / "MDT" / f"MDT_{tile_id}.xyz")
+    mds_xyz = next((DATA_DIR / "MDS").glob(f"MDS_{tile_id}*.xyz"), DATA_DIR / "MDS" / f"MDS_{tile_id}.xyz")
+    mdt_xyz = next((DATA_DIR / "MDT").glob(f"MDT_{tile_id}*.xyz"), DATA_DIR / "MDT" / f"MDT_{tile_id}.xyz")
     
     if not mds_xyz.exists() or not mdt_xyz.exists():
-        return tile_id, False, f"⚠️ [Erro] Insumos .xyz ausentes para o tile {tile_id}."
+        return tile_id, False, f"⚠️ [Erro] Insumos .xyz ausentes para o tile {tile_id} em {DATA_DIR}."
 
     env_trabalho = os.environ.copy()
     env_trabalho["RESOLUCAO_ESTEIRA"] = str(GRID_RES)
@@ -417,7 +424,7 @@ def processar_single_tile(tile_id):
             return tile_id, False, erro_msg
             
     dt_total = time.time() - t0_tile
-    return tile_id, True, f"✅ Quadrante {tile_id} processado com sucesso em {dt_total:.1f}s."
+    return tile_id, True, f"Quadrante {tile_id} processado com sucesso em {dt_total:.1f}s."
 
 
 if __name__ == "__main__":
@@ -425,8 +432,8 @@ if __name__ == "__main__":
     print("ORQUESTRADOR PARALELO DE MÁXIMA EFICIÊNCIA - RASTER 0.25m")
     print("-" * 60)
     
-    # EQUILÍBRIO ULTRA-RÁPIDO PARA 8GB DE RAM (Evita paginação forçada no SSD)
-    MAX_WORKERS = 4
+    # ADAPTAÇÃO PARA O CORE ULTRA 7: Ajustado para 10 workers paralelos (20 threads / 32GB RAM)
+    MAX_WORKERS = 3
     
     t0_global = time.time()
     sucessos = 0
@@ -448,7 +455,7 @@ if __name__ == "__main__":
                 sucessos += 1
             else:
                 falhas += 1
-                print(f"🛑 [Interrupção] A esteira descartou o tile {tile_concluido} devido ao erro acima.")
+                print(f"[Interrupção] A esteira descartou o tile {tile_concluido} devido ao erro acima.")
             
             # Limpeza cirúrgica da RAM a cada ciclo finalizado
             gc.collect()

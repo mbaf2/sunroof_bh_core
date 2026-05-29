@@ -9,7 +9,13 @@ from scipy.interpolate import NearestNDInterpolator
 
 # Setup de execução
 tile = sys.argv[1] if len(sys.argv) > 1 else "5250"
-base_dir = Path(__file__).resolve().parents[1] / "Teste"
+
+# ==============================================================================
+# AJUSTE DE ENDEREÇAMENTO GERAL - ARQUITETURA GITHUB / REPOSITÓRIO
+# Subimos 2 níveis (.parents[2]) para sair de Python/sunroof_bh_core
+# e alteramos o nome do diretório de "Teste" para "Data"
+# ==============================================================================
+base_dir = Path(__file__).resolve().parents[2] / "Data"
 out_dir = base_dir / f"Resultados_{tile}"
 out_dir.mkdir(parents=True, exist_ok=True)
   
