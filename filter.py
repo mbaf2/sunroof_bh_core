@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 import geopandas as gpd
 
-# Setup de I/O
+
 tile = sys.argv[1] if len(sys.argv) > 1 else "5250"
 
 # ==============================================================================
@@ -30,7 +30,7 @@ if n_initial == 0:
 # Isso evita o KeyError caso o zonal_statistics tenha falhado ao gravar
 gdf['area_m2'] = gdf.geometry.area
 
-# Filtro de área mínima para descartar artefatos do LiDAR
+# Filtro de área mínima para descartar artefatos
 gdf_clean = gdf[gdf['area_m2'] >= 5.0].copy()
 n_final = len(gdf_clean)
 

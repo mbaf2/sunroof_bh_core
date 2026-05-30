@@ -7,7 +7,6 @@ from rasterio.features import geometry_mask
 from rasterio.windows import from_bounds
 from pathlib import Path
 
-# Config inicial
 tile_id = sys.argv[1] if len(sys.argv) > 1 else "5250"
 
 # AJUSTE DE ENDEREÇAMENTO: Subimos 2 níveis (.parents[2]) para sair de Python/sunroof_bh_core
@@ -115,7 +114,6 @@ with rasterio.open(files["ndsm"]) as src_h, \
         except Exception:
             results.append([0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0])
 
-# Acoplamento dos resultados na tabela geoespacial
 cols = ['h_mean', 'h_max', 'slope_mean', 'aspect_pred', 'kwh_m2_avg', 'kwh_total_yr', 'area_util_m2']
 res_df = np.array(results)
 
@@ -128,18 +126,16 @@ gdf['area_tot_m2'] = gdf.geometry.area
 gdf.to_file(out_path, driver="GPKG")
 print(f"OK: {out_path.name}")
 
-# ==============================================================================
-# LIXEIRO AUTOMÁTICO - FAXINA DE ÚLTIMA HORA
-# ==============================================================================
+# LIXEIRO 
 
 print(f"[Limpeza] Executando remoção de rasters intermediários para {tile_id}...")
 
 arquivos_para_deletar = [
     files["mds"],
-    files["mdt"],
-    files["ndsm"],
-    files["slope"],
-    files["aspect"]
+    files["mdt"]
+#    files["ndsm"],
+#    files["slope"],
+#    files["aspect"]
 ]
 
 removidos = 0

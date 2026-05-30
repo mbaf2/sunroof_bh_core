@@ -26,6 +26,7 @@ tiles = [
     "5059",
     "5060"
          ]
+
 RESOLUTION = 0.25
 
 scripts = [

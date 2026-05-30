@@ -374,7 +374,9 @@ tiles = [
 GRID_RES = 1
 
 pipeline = [
-    "dsm.py", "dtm.py", "intensity.py", "ndsm.py", 
+    "dsm.py", "dtm.py", 
+#    "intensity.py", 
+    "ndsm.py", 
     "buildings_footprint.py", "mds_buildings.py", 
     "slope.py", "aspect.py",
     "solar_simulation.py",
@@ -382,7 +384,7 @@ pipeline = [
 ]
 
 def convert_las_to_xyz(search_path, tile_id, out_file):
-    """Localiza arquivos LiDAR e unifica em um .xyz plano via streaming"""
+    """Localiza arquivos LiDAR e unifica em um .xyz"""
     import laspy
     
     las_files = list(search_path.rglob(f"*{tile_id}*.las")) + list(search_path.rglob(f"*{tile_id}*.laz"))
@@ -414,6 +416,7 @@ def convert_las_to_xyz(search_path, tile_id, out_file):
 
 print("-" * 50)
 print("ORQUESTRADOR - PROJETO BH")
+print("Resolução: {GRID_RES:.2f}")
 print("-" * 50)
 
 for tile in tiles:
@@ -428,7 +431,7 @@ for tile in tiles:
     
     print(f"\n>> Iniciando Tile: {tile}")
     
-    # Garantia de insumos (converte se necessário)
+    # Garantia de dados (converte se necessário)
     if not mds_xyz.exists():
         print(f"  MDS .xyz não encontrado. Buscando .las...")
         mds_xyz = DATA_DIR / "MDS" / f"MDS_{tile}.xyz"

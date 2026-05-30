@@ -28,10 +28,6 @@ with rasterio.open(f_mds) as s_mds, rasterio.open(f_mdt) as s_mdt:
     m_mdt = s_mdt.read(1)
     meta = s_mds.meta.copy()
 
-# ==============================================================================
-# TRAVA 3: RECORTE DINÂMICO DE SEGURANÇA (INTERSECTION CROP)
-# Evita o ValueError calculando a interseção matricial exata se houver descompasso
-# ==============================================================================
 min_linhas = min(m_mds.shape[0], m_mdt.shape[0])
 min_colunas = min(m_mds.shape[1], m_mdt.shape[1])
 
@@ -39,25 +35,19 @@ if m_mds.shape != m_mdt.shape:
     print(f"   - [Aviso Borda] Shapes divergentes detectados: MDS {m_mds.shape} | MDT {m_mdt.shape}")
     print(f"   - [Aviso Borda] Aplicando corte comum de segurança: ({min_linhas}, {min_colunas})")
 
-# Fatiamos cirurgicamente as duas matrizes antes de qualquer mascaramento ou cálculo
 m_mds_c = m_mds[:min_linhas, :min_colunas]
 m_mdt_c = m_mdt[:min_linhas, :min_colunas]
   
-# Mascaramento de nodata para cálculo seguro usando as matrizes recortadas
 mds_val = np.where(m_mds_c == -9999.0, np.nan, m_mds_c)
 mdt_val = np.where(m_mdt_c == -9999.0, np.nan, m_mdt_c)
 
-# nDSM = MDS - MDT (Agora matematicamente à prova de falhas)
 ndsm = mds_val - mdt_val
 
 # Correção de ruído (alturas negativas) e restauração de nodata
 ndsm = np.where(ndsm < 0.0, 0.0, ndsm)
 ndsm[np.isnan(mds_val) | np.isnan(mdt_val)] = -9999.0
 
-# ==============================================================================
-# ATUALIZAÇÃO RESTRITA DOS METADADOS
-# Atualizamos height e width caso a matriz tenha sofrido o corte de segurança
-# ==============================================================================
+
 meta.update(
     dtype="float32", 
     nodata=-9999.0,

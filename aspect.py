@@ -12,8 +12,7 @@ tile = sys.argv[1] if len(sys.argv) > 1 else "5250"
 # apontamos para a nova pasta "Data" e unificamos a nomenclatura do MDS.
 # ==============================================================================
 work_dir = Path(__file__).resolve().parents[2] / "Data" / f"Resultados_{tile}"
-  
-# Nomenclatura unificada para ler o MDS real gerado na esteira
+
 f_mds = work_dir / f"RASTER_MDS_{tile}.tif"
 f_slp = work_dir / f"RASTER_Slope_{tile}.tif"
 f_out = work_dir / f"RASTER_Aspect_{tile}.tif"
@@ -29,14 +28,8 @@ with rasterio.open(f_mds) as src_mds, rasterio.open(f_slp) as src_slp:
     meta = src_mds.meta.copy()
     res = src_mds.res[0]
 
-# ==============================================================================
-# CÁLCULO SEGURO DA ORIENTAÇÃO DO RELEVO
-# Calculamos os gradientes direto na matriz cheia para shapes idênticos garantidos
-# ==============================================================================
 gy, gx = np.gradient(m_mds, res)
 
-# arctan2 retorna valores entre -pi e +pi. 
-# Convertemos para azimute em graus (0° a 360°), onde 0°/360° é o Norte
 aspect = np.degrees(np.arctan2(-gx, gy))
 aspect = np.where(aspect < 0.0, aspect + 360.0, aspect)
 
@@ -45,10 +38,8 @@ aspect = np.where(aspect < 0.0, aspect + 360.0, aspect)
 # Agora com as duas matrizes vindo da mesma fôrma tridimensional, o broadcast funciona perfeito!
 aspect = np.where(m_slp < 1.0, -1.0, aspect)
 
-# Restauração estrita do NoData original do MDS
 aspect[m_mds == -9999.0] = -9999.0
 
-# Export final para o SIG
 meta.update(dtype="float32", nodata=-9999.0)
 with rasterio.open(f_out, "w", **meta) as dst:
     dst.write(aspect.astype(np.float32), 1)

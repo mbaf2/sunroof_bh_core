@@ -18,7 +18,6 @@ res_dir = Path(__file__).resolve().parents[2] / "Data" / f"Resultados_{tile}"
 f_mds = res_dir / f"RASTER_MDS_{tile}.tif"
 f_vec = res_dir / f"buildings_zone_{tile}.gpkg"
 
-# Padronizado para RASTER_MDS_ para manter a consistência com o restante da esteira
 f_out = res_dir / f"RASTER_MDS_{tile}.tif"
 
 if not f_mds.exists() or not f_vec.exists():
@@ -36,8 +35,6 @@ with rasterio.open(f_mds) as src:
     shape_raster = m_mds.shape
 
 if len(gdf) > 0 and not gdf.geometry.is_empty.all():
-    # Cria uma máscara booleana ultra-rápida na RAM baseada nos polígonos dos prédios
-    # invert=True significa que as geometries viram False (não mascaradas)
     mask_predios = geometry_mask(gdf.geometry, out_shape=shape_raster, transform=transform, invert=True)
     
     # Tudo o que NÃO for prédio vira NoData (-9999.0)

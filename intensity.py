@@ -7,7 +7,6 @@ import rasterio
 from rasterio.transform import from_origin
 from scipy.interpolate import NearestNDInterpolator
 
-# Setup de execução
 tile = sys.argv[1] if len(sys.argv) > 1 else "5250"
 
 # ==============================================================================
@@ -19,8 +18,7 @@ base_dir = Path(__file__).resolve().parents[2] / "Data"
 out_dir = base_dir / f"Resultados_{tile}"
 out_dir.mkdir(parents=True, exist_ok=True)
   
-# Parâmetros da esteira
-res = float(os.environ.get("RESOLUCAO_ESTEIRA", 1.0))
+res = float(os.environ.get("RESOLUCAO_PIPELINE", 1.0))
 f_name = os.environ.get(f"XYZ_MDS_{tile}", f"MDS_{tile}.xyz")
 f_path = base_dir / "MDS" / f_name
 
@@ -46,7 +44,6 @@ print(f"   - Interpolando {len(df)} pontos...")
 interp = NearestNDInterpolator(np.column_stack((df.X, df.Y)), df.I)
 m_intensity = interp(gx, gy)
 
-# Meta e Export
 h, w = m_intensity.shape
 transform = from_origin(x_min, y_max, res, res)
 

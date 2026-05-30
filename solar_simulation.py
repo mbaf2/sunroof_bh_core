@@ -4,7 +4,6 @@ from pathlib import Path
 import numpy as np
 import rasterio
 
-# Identificador do quadrante
 tile = sys.argv[1] if len(sys.argv) > 1 else "5250"
 
 # ==============================================================================
@@ -15,7 +14,7 @@ tile = sys.argv[1] if len(sys.argv) > 1 else "5250"
 tile_dir = Path(__file__).resolve().parents[2] / "Data" / f"Resultados_{tile}"
   
 src_files = {
-    "mds": tile_dir / f"RASTER_MDS_{tile}.tif", # Corrigido para o padrão unificado da esteira
+    "mds": tile_dir / f"RASTER_MDS_{tile}.tif",
     "slope": tile_dir / f"RASTER_Slope_{tile}.tif",
     "aspect": tile_dir / f"RASTER_Aspect_{tile}.tif"
 }
@@ -23,14 +22,14 @@ src_files = {
 out_solar = tile_dir / f"RASTER_Irradiacao_{tile}.tif"
 
 if not all(p.exists() for p in src_files.values()):
-    sys.exit(f"Erro: Insumos geométricos ausentes em {tile_dir}")
+    sys.exit(f"Erro: Dados geométricos ausentes em {tile_dir}")
 
 print(f">> Iniciando simulação solar: Tile {tile}")
 
 with rasterio.open(src_files["mds"]) as s_mds, \
      rasterio.open(src_files["slope"]) as s_slp, \
      rasterio.open(src_files["aspect"]) as s_asp:
-     
+    
     mds = s_mds.read(1)
     slp = np.radians(s_slp.read(1))
     asp = np.radians(s_asp.read(1))
@@ -82,11 +81,9 @@ for doy, w in zip(doy_list, weights):
             
     acc_energy += e_day * w
 
-# Conversão Wh -> kWh e Nodata
 kwh_yr = acc_energy / 1000.0
 kwh_yr[mds == -9999.0] = -9999.0
 
-# Export
 meta.update(dtype="float32", nodata=-9999.0)
 with rasterio.open(out_solar, "w", **meta) as dst:
     dst.write(kwh_yr.astype(np.float32), 1)

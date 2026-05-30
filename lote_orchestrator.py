@@ -19,19 +19,18 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR.parents[1] / "Data"
 
-# RESOLUÇÃO ULTRA-DENSA (Cada quadrante tem 4x mais pixels que em 0.5m)
 GRID_RES = 0.25
 
-# Pipeline sequencial por quadrante
 PIPELINE = [
-    "dsm.py", "dtm.py", "intensity.py", "ndsm.py", 
+    "dsm.py", "dtm.py", 
+#    "intensity.py", 
+    "ndsm.py", 
     "buildings_footprint.py", "mds_buildings.py", 
     "slope.py", "aspect.py",
     "solar_simulation.py",
     "zonal_statistics.py", "filter.py"
 ]
-  
-# Lista consolidada de quadrantes
+
 TILES = [
         """        
           "4243",
@@ -386,9 +385,7 @@ TILES = [
           "6061"
 ]
 
-
 def processar_single_tile(tile_id):
-    """Worker de alta performance executado de forma paralela por núcleo"""
     t0_tile = time.time()
     out_dir = DATA_DIR / f"Resultados_{tile_id}"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -397,14 +394,13 @@ def processar_single_tile(tile_id):
     mdt_xyz = next((DATA_DIR / "MDT").glob(f"MDT_{tile_id}*.xyz"), DATA_DIR / "MDT" / f"MDT_{tile_id}.xyz")
     
     if not mds_xyz.exists() or not mdt_xyz.exists():
-        return tile_id, False, f"⚠️ [Erro] Insumos .xyz ausentes para o tile {tile_id} em {DATA_DIR}."
+        return tile_id, False, f"[Erro] Dados .xyz ausentes para o tile {tile_id} em {DATA_DIR}."
 
     env_trabalho = os.environ.copy()
-    env_trabalho["RESOLUCAO_ESTEIRA"] = str(GRID_RES)
+    env_trabalho["RESOLUCAO_PIPELINE"] = str(GRID_RES)
     env_trabalho[f"XYZ_MDS_{tile_id}"] = str(mds_xyz.name)
     env_trabalho[f"XYZ_MDT_{tile_id}"] = str(mdt_xyz.name)
     
-    # Execução otimizada de subprocessos em nível de kernel
     for script in PIPELINE:
         # Passar stdout=None acelera o processo pois joga a saída direto no buffer de IO oculto
         proc = subprocess.run(
@@ -417,7 +413,7 @@ def processar_single_tile(tile_id):
         
         if proc.returncode != 0:
             erro_msg = (
-                f"❌ [Falha] Script {script} quebrou no Quadrante {tile_id}!\n"
+                f"    [Falha] Script {script} quebrou no Quadrante {tile_id}!\n"
                 f"--- LOG DE ERRO (STDERR) ---\n{proc.stderr}\n"
                 f"----------------------------------------"
             )
@@ -429,10 +425,9 @@ def processar_single_tile(tile_id):
 
 if __name__ == "__main__":
     print("-" * 60)
-    print("ORQUESTRADOR PARALELO DE MÁXIMA EFICIÊNCIA - RASTER 0.25m")
+    print("ORQUESTRADOR PARALELO - RASTER 0.25m")
     print("-" * 60)
     
-    # ADAPTAÇÃO PARA O CORE ULTRA 7: Ajustado para 10 workers paralelos (20 threads / 32GB RAM)
     MAX_WORKERS = 3
     
     t0_global = time.time()
@@ -457,12 +452,12 @@ if __name__ == "__main__":
                 falhas += 1
                 print(f"[Interrupção] A esteira descartou o tile {tile_concluido} devido ao erro acima.")
             
-            # Limpeza cirúrgica da RAM a cada ciclo finalizado
+            # Limpeza da RAM a cada ciclo finalizado
             gc.collect()
 
     dt_total_lote = time.time() - t0_global
     print("=" * 60)
     print("PROCESSAMENTO EM LOTE FINALIZADO")
-    print(f"-> Tempo de corrida: {int(dt_total_lote // 60)}m {dt_total_lote % 60:.1f}s")
-    print(f"-> Sucessos acumulados: {sucessos} | Falhas em quarentena: {falhas}")
+    print(f"-> Tempo: {int(dt_total_lote // 60)}m {dt_total_lote % 60:.1f}s")
+    print(f"-> Sucessos acumulados: {sucessos} | Falhas em quadrante: {falhas}")
     print("=" * 60)
