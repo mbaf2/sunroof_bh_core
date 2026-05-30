@@ -25,6 +25,7 @@ n_initial = len(gdf)
 
 if n_initial == 0:
     sys.exit(f"Aviso: {tile} vazio. Pulando.")
+    sys.exit(0)  # O zero significa "Sucesso/Tudo OK" para o sistema operacional
 
 # Garante que a coluna de área existe calculando na hora
 # Isso evita o KeyError caso o zonal_statistics tenha falhado ao gravar

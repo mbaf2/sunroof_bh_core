@@ -131,11 +131,11 @@ print(f"OK: {out_path.name}")
 print(f"[Limpeza] Executando remoção de rasters intermediários para {tile_id}...")
 
 arquivos_para_deletar = [
-    files["mds"],
-    files["mdt"]
-#    files["ndsm"],
-#    files["slope"],
-#    files["aspect"]
+#    files["mds"],
+#    files["mdt"]
+    files["ndsm"],
+    files["slope"],
+    files["aspect"]
 ]
 
 removidos = 0

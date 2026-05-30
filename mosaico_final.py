@@ -13,7 +13,9 @@ from rasterio.merge import merge
 # Como este script roda dentro de Python/sunroof_bh_core, subimos 2 níveis (.parents[1])
 # para encontrar a raiz do projeto (projeto_bh) e alteramos a pasta de "Teste" para "Data"
 # ==============================================================================
-ROOT_DIR = Path(__file__).resolve().parents[1]
+
+#ROOT_DIR = Path(__file__).resolve().parents[1]
+ROOT_DIR = Path(__file__).resolve().parents[2]
 BASE_DIR = ROOT_DIR / "Data"
 
 raster_mosaico_final = ROOT_DIR / "BH_Irradiacao_Completa.tif"
@@ -65,6 +67,6 @@ with rasterio.open(raster_mosaico_final, "w", **meta) as dest:
 for ras in arquivos_abertos:
     ras.close()
 
-print(f"\n[SUCESSO] Mosaico final gerado com perfeição!")
+print(f"\n[SUCESSO] Mosaico final gerado!")
 print(f"-> Arquivo criado: {raster_mosaico_final.name}")
 print(f"-> Caminho: {raster_mosaico_final.absolute()}")

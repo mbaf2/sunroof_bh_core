@@ -7,382 +7,26 @@ import subprocess
 import sys
 import os
 import gc
+import argparse
 from pathlib import Path
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 # ==============================================================================
-# AJUSTE DE ENDEREÇAMENTO GERAL - ARQUITETURA GITHUB / REPOSITÓRIO
-# Como este script roda dentro de Python/sunroof_bh_core, subimos 2 níveis (.parents[1])
-# para encontrar a raiz do projeto (projeto_bh) e alteramos a pasta de "Teste" para "Data"
+# CONFIGURAÇÕES DE DIRETÓRIO E PIPELINE
 # ==============================================================================
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR.parents[1] / "Data"
-
-GRID_RES = 0.25
+GRID_RES = 0.5
 
 PIPELINE = [
     "dsm.py", "dtm.py", 
-#    "intensity.py", 
+    # "intensity.py", 
     "ndsm.py", 
     "buildings_footprint.py", "mds_buildings.py", 
     "slope.py", "aspect.py",
     "solar_simulation.py",
     "zonal_statistics.py", "filter.py"
-]
-
-TILES = [
-        """        
-          "4243",
-          "4244",
-          "4245",
-          "4341",
-          "4342",
-          "4343",
-          "4344",
-          "4345",
-          "4439",
-          "4440",
-          "4441",
-          "4442",
-          "4443",
-          "4444",
-          "4538",
-          "4539",
-          "4540",
-          "4541",
-          "4542",
-        """
-          "4543",
-          "4544",
-          "4545",
-          "4548",
-          "4549",
-          "4550",
-          "4551",
-          "4552",
-          "4553",
-          "4556",
-          "4557",
-          "4635",
-          "4636",
-          "4637",
-          "4638",
-          "4639",
-          "4640",
-          "4641",
-          "4642",
-          "4643",
-          "4644",
-          "4645",
-          "4646",
-          "4647",
-          "4648",
-          "4649",
-          "4650",
-          "4651",
-          "4652",
-          "4653",
-          "4654",
-          "4655",
-          "4656",
-          "4657",
-          "4658",
-          "4659",
-          "4660",
-          "4661",
-          "4662",
-          "4735",
-          "4736",
-          "4737",
-          "4738",
-          "4739",
-          "4740",
-          "4741",
-          "4742",
-          "4743",
-          "4744",
-          "4745",
-          "4746",
-          "4747",
-          "4748",
-          "4749",
-          "4750",
-          "4751",
-          "4752",
-          "4753",
-          "4754",
-          "4755",
-          "4756",
-          "4757",
-          "4758",
-          "4759",
-          "4760",
-          "4761",
-          "4762",
-          "4763",
-          "4764",
-          "4837",
-          "4838",
-          "4839",
-          "4840",
-          "4841",
-          "4842",
-          "4843",
-          "4844",
-          "4845",
-          "4846",
-          "4847",
-          "4848",
-          "4849",
-          "4850",
-          "4851",
-          "4852",
-          "4853",
-          "4854",
-          "4855",
-          "4856",
-          "4857",
-          "4858",
-          "4859",
-          "4860",
-          "4861",
-          "4862",
-          "4863",
-          "4864",
-          "4865",
-          "4866",
-          "4939",
-          "4940",
-          "4941",
-          "4942",
-          "4943",
-          "4944",
-          "4945",
-          "4946",
-          "4947",
-          "4948",
-          "4949",
-          "4950",
-          "4951",
-          "4952",
-          "4953",
-          "4954",
-          "4955",
-          "4956",
-          "4957",
-          "4958",
-          "4959",
-          "4960",
-          "4961",
-          "4962",
-          "4963",
-          "4964",
-          "4965",
-          "4966",
-          "5041",
-          "5042",
-          "5043",
-          "5044",
-          "5045",
-          "5046",
-          "5047",
-          "5048",
-          "5049",
-          "5050",
-          "5051",
-          "5052",
-          "5053",
-          "5054",
-          "5055",
-          "5056",
-          "5057",
-          "5058",
-          "5059",
-          "5060",
-          "5061",
-          "5062",
-          "5063",
-          "5064",
-          "5065",
-          "5066",
-          "5141",
-          "5142",
-          "5143",
-          "5144",
-          "5145",
-          "5146",
-          "5147",
-          "5148",
-          "5149",
-          "5150",
-          "5151",
-          "5152",
-          "5153",
-          "5154",
-          "5155",
-          "5156",
-          "5157",
-          "5158",
-          "5159",
-          "5160",
-          "5161",
-          "5162",
-          "5163",
-          "5164",
-          "5165",
-          "5166",
-          "5167",
-          "5243",
-          "5244",
-          "5245",
-          "5246",
-          "5247",
-          "5248",
-          "5249",
-          "5250",
-          "5251",
-          "5252",
-          "5253",
-          "5254",
-          "5255",
-          "5256",
-          "5257",
-          "5258",
-          "5259",
-          "5260",
-          "5261",
-          "5262",
-          "5263",
-          "5264",
-          "5265",
-          "5266",
-          "5267",
-          "5344",
-          "5345",
-          "5346",
-          "5347",
-          "5348",
-          "5349",
-          "5350",
-          "5351",
-          "5352",
-          "5353",
-          "5354",
-          "5355",
-          "5356",
-          "5357",
-          "5358",
-          "5359",
-          "5360",
-          "5361",
-          "5362",
-          "5363",
-          "5364",
-          "5445",
-          "5446",
-          "5447",
-          "5448",
-          "5449",
-          "5450",
-          "5451",
-          '''
-          "5452",
-          "5453",
-          "5454",
-          "5455",
-          "5456",
-          "5457",
-          "5458",
-          "5459",
-          "5460",
-          "5461",
-          "5462",
-          "5463",
-          "5464",
-          "5545",
-          "5546",
-          "5547",
-          "5548",
-          "5549",
-          "5550",
-          "5551",
-          "5552",
-          "5553",
-          "5554",
-          "5555",
-          "5556",
-          "5557",
-          "5558",
-          "5559",
-          "5560",
-          "5561",
-          "5562",
-          "5563",
-          "5564",
-          "5646",
-          "5647",
-          "5648",
-          "5649",
-          "5650",
-          "5651",
-          "5652",
-          "5653",
-          "5654",
-          "5655",
-          "5656",
-          "5657",
-          "5658",
-          "5659",
-          "5660",
-          "5661",
-          "5662",
-          "5663",
-          "5664",
-          "5747",
-          "5748",
-          "5749",
-          "5750",
-          "5751",
-          "5752",
-          "5753",
-          "5754",
-          "5755",
-          "5756",
-          "5757",
-          "5758",
-          "5759",
-          "5760",
-          "5761",
-          "5762",
-          "5763",
-          "5848",
-          "5849",
-          "5850",
-          "5851",
-          "5852",
-          "5853",
-          "5856",
-          "5857",
-          "5858",
-          "5859",
-          "5860",
-          "5861",
-          "5862",
-          "5863",
-          "5949",
-          "5950",
-          "5951",
-          "5957",
-          "5958",
-          "5959",
-          "5960",
-          "5961",
-          "5962",
-          "6057",
-          "6058",
-          '''
-          "6061"
 ]
 
 def processar_single_tile(tile_id):
@@ -397,12 +41,12 @@ def processar_single_tile(tile_id):
         return tile_id, False, f"[Erro] Dados .xyz ausentes para o tile {tile_id} em {DATA_DIR}."
 
     env_trabalho = os.environ.copy()
-    env_trabalho["RESOLUCAO_PIPELINE"] = str(GRID_RES)
+    # RESTAURADO PARA 'RESOLUCAO_ESTEIRA' PARA CONVERSAR COM OS SCRIPTS FILHOS
+    env_trabalho["RESOLUCAO_ESTEIRA"] = str(GRID_RES)
     env_trabalho[f"XYZ_MDS_{tile_id}"] = str(mds_xyz.name)
     env_trabalho[f"XYZ_MDT_{tile_id}"] = str(mdt_xyz.name)
     
     for script in PIPELINE:
-        # Passar stdout=None acelera o processo pois joga a saída direto no buffer de IO oculto
         proc = subprocess.run(
             [sys.executable, str(BASE_DIR / script), tile_id],
             stdout=subprocess.DEVNULL, 
@@ -422,24 +66,62 @@ def processar_single_tile(tile_id):
     dt_total = time.time() - t0_tile
     return tile_id, True, f"Quadrante {tile_id} processado com sucesso em {dt_total:.1f}s."
 
+def obter_tiles_dinamicos(args):
+    """Lógica inteligente para selecionar quais quadrantes processar"""
+    tiles = set()
+    
+    # 1. Modo Automático: Varre a pasta MDS e pega todos os tiles disponíveis
+    if args.all:
+        print(">> Modo --all ativado: Mapeando todos os arquivos .xyz na pasta MDS...")
+        for arquivo in (DATA_DIR / "MDS").glob("MDS_*.xyz"):
+            # Extrai apenas o número do tile do nome do arquivo (ex: MDS_5250.xyz -> 5250)
+            tile_str = arquivo.stem.split("_")[1]
+            tiles.add(tile_str)
+            
+    # 2. Modo Lista de Arquivo: Lê um arquivo TXT com um tile por linha
+    if args.file:
+        arquivo_txt = Path(args.file)
+        if arquivo_txt.exists():
+            print(f">> Lendo quadrantes do arquivo: {arquivo_txt.name}")
+            with open(arquivo_txt, "r") as f:
+                tiles.update(linha.strip() for linha in f if linha.strip())
+        else:
+            sys.exit(f"Erro: Arquivo {arquivo_txt} não encontrado.")
+            
+    # 3. Modo Manual: Pega os tiles passados diretamente no terminal
+    if args.tiles:
+        tiles.update(args.tiles)
+        
+    return sorted(list(tiles))
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Orquestrador Paralelo Sunroof BH")
+    parser.add_argument("-t", "--tiles", nargs="+", help="Lista de quadrantes específicos (ex: -t 5250 4545)")
+    parser.add_argument("-f", "--file", type=str, help="Arquivo TXT contendo os tiles a processar")
+    parser.add_argument("-a", "--all", action="store_true", help="Processa TODOS os tiles encontrados na pasta Data/MDS")
+    parser.add_argument("-w", "--workers", type=int, default=3, help="Número de threads de CPU (default: 3)")
+    
+    args = parser.parse_args()
+    
+    TILES = obter_tiles_dinamicos(args)
+    
+    if not TILES:
+        parser.print_help()
+        sys.exit("\nNenhum quadrante selecionado. Use --all, --file ou --tiles.")
+
     print("-" * 60)
     print("ORQUESTRADOR PARALELO - RASTER 0.25m")
     print("-" * 60)
-    
-    MAX_WORKERS = 3
-    
+    print(f">> Iniciando processamento paralelo assíncrono.")
+    print(f">> Threads dedicadas na CPU: {args.workers} | Resolução: {GRID_RES}m")
+    print(f">> Total de quadrantes na fila: {len(TILES)}")
+    print("-" * 60)
+
     t0_global = time.time()
     sucessos = 0
     falhas = 0
-    
-    print(f">> Iniciando processamento paralelo assíncrono.")
-    print(f">> Threads dedicadas na CPU: {MAX_WORKERS} | Resolução: {GRID_RES}m")
-    print(f">> Total de quadrantes a processar: {len(TILES)}")
-    print("-" * 60)
 
-    with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
+    with ProcessPoolExecutor(max_workers=args.workers) as executor:
         futuros = {executor.submit(processar_single_tile, tile): tile for tile in TILES}
         
         for futuro in as_completed(futuros):
@@ -452,12 +134,11 @@ if __name__ == "__main__":
                 falhas += 1
                 print(f"[Interrupção] A esteira descartou o tile {tile_concluido} devido ao erro acima.")
             
-            # Limpeza da RAM a cada ciclo finalizado
             gc.collect()
 
     dt_total_lote = time.time() - t0_global
     print("=" * 60)
     print("PROCESSAMENTO EM LOTE FINALIZADO")
     print(f"-> Tempo: {int(dt_total_lote // 60)}m {dt_total_lote % 60:.1f}s")
-    print(f"-> Sucessos acumulados: {sucessos} | Falhas em quadrante: {falhas}")
+    print(f"-> Sucessos: {sucessos} | Falhas: {falhas}")
     print("=" * 60)
