@@ -20,7 +20,7 @@ files = {
     "ndsm": root_dir / f"RASTER_nDSM_{tile_id}.tif",
     "slope": root_dir / f"RASTER_Slope_{tile_id}.tif",
     "aspect": root_dir / f"RASTER_Aspect_{tile_id}.tif",
-    "solar": root_dir / f"RASTER_Irradiacao_{tile_id}.tif"
+    "solar": root_dir / f"RASTER_Irradiacao_{tile_id}.tif",
 }
 
 if not all(f.exists() for f in files.values()):
@@ -33,14 +33,23 @@ out_path = root_dir / f"buildings_sunroof_pronto_{tile_id}.gpkg"
 
 if gdf.empty:
     print(f"Aviso: o quadrante {tile_id} não possui edificações vetorizadas.")
-    cols = ['h_mean','h_max', 'slope_mean', 'aspect_pred', 'kwh_m2_avg', 'kwh_total_yr', 'area_util_m2', 'area_tot_m2']
-    for col in cols: 
+    cols = [
+        "h_mean",
+        "h_max",
+        "slope_mean",
+        "aspect_pred",
+        "kwh_m2_avg",
+        "kwh_total_yr",
+        "area_util_m2",
+        "area_tot_m2",
+    ]
+    for col in cols:
         gdf[col] = None
     gdf.to_file(out_path, driver="GPKG")
     print(f"Ok: {out_path.name} (Salvo vazio por consistencia)")
-    sys.exit(0) 
+    sys.exit(0)
 
-THRESHOLD_SOLAR = 1200.0 
+THRESHOLD_SOLAR = 1200.0
 results = []
 
 # ==============================================================================
@@ -48,41 +57,44 @@ results = []
 # Abrimos os arquivos raster mantendo os ponteiros prontos para leituras cirúrgicas.
 # Evitamos alocar e varrer matrizes globais de 16 milhões de pixels repetitivamente.
 # ==============================================================================
-with rasterio.open(files["ndsm"]) as src_h, \
-     rasterio.open(files["slope"]) as src_s, \
-     rasterio.open(files["aspect"]) as src_a, \
-     rasterio.open(files["solar"]) as src_rad:
-     
+with (
+    rasterio.open(files["ndsm"]) as src_h,
+    rasterio.open(files["slope"]) as src_s,
+    rasterio.open(files["aspect"]) as src_a,
+    rasterio.open(files["solar"]) as src_rad,
+):
     px_area = abs(src_rad.res[0] * src_rad.res[1])
-    
+
     for geom in gdf.geometry:
         if geom is None or geom.is_empty:
             results.append([0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0])
             continue
-            
+
         try:
             # O GRANDE TRUQUE: Captura os limites geométricos exatos do polígono do prédio
             bounds = geom.bounds  # (minx, miny, maxx, maxy)
-            
+
             # Cria uma janela local (Bounding Box) correspondente a esses limites no raster
             window = from_bounds(*bounds, transform=src_rad.transform)
-            
+
             # Arredonda os limites da janela para índices inteiros de pixels
             window = window.round_shape()
-            
+
             # Obtém a matriz de transformação afim local e o shape específico da janela pequena
             win_transform = src_rad.window_transform(window)
             win_shape = (window.height, window.width)
-            
+
             # Lê apenas o micro-retângulo de dados correspondente ao prédio (fração de milissegundos)
             arr_h = src_h.read(1, window=window)
             arr_s = src_s.read(1, window=window)
             arr_a = src_a.read(1, window=window)
             arr_r = src_rad.read(1, window=window)
-            
+
             # Desenha a máscara booleana estritamente sobre o tamanho reduzido da micro-janela
-            mask_geom = geometry_mask([geom], out_shape=win_shape, transform=win_transform, invert=True)
-            
+            mask_geom = geometry_mask(
+                [geom], out_shape=win_shape, transform=win_transform, invert=True
+            )
+
             # Isolamos os valores válidos ignorando o NoData dentro da micro-janela
             val_h = arr_h[mask_geom & (arr_h != -9999.0)]
             val_s = arr_s[mask_geom & (arr_s != -9999.0)]
@@ -93,13 +105,13 @@ with rasterio.open(files["ndsm"]) as src_h, \
             h_med = float(np.mean(val_h)) if val_h.size > 0 else 0.0
             h_max = float(np.max(val_h)) if val_h.size > 0 else 0.0
             s_med = float(np.mean(val_s)) if val_s.size > 0 else 0.0
-            
+
             if val_a.size > 0:
                 vals, counts = np.unique(val_a, return_counts=True)
                 a_pred = float(vals[np.argmax(counts)])
             else:
                 a_pred = -1.0
-                
+
             # Análise de Potencial Solar vetorizada no subset mapeado
             if val_r.size > 0:
                 r_med = float(np.mean(val_r))
@@ -108,34 +120,42 @@ with rasterio.open(files["ndsm"]) as src_h, \
                 r_total = float(np.sum(val_r[mask_util]) * px_area)
             else:
                 r_med = a_util = r_total = 0.0
-            
+
             results.append([h_med, h_max, s_med, a_pred, r_med, r_total, a_util])
-                
+
         except Exception:
             results.append([0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0])
 
-cols = ['h_mean', 'h_max', 'slope_mean', 'aspect_pred', 'kwh_m2_avg', 'kwh_total_yr', 'area_util_m2']
+cols = [
+    "h_mean",
+    "h_max",
+    "slope_mean",
+    "aspect_pred",
+    "kwh_m2_avg",
+    "kwh_total_yr",
+    "area_util_m2",
+]
 res_df = np.array(results)
 
 for i, col in enumerate(cols):
     gdf[col] = res_df[:, i]
 
-gdf['area_tot_m2'] = gdf.geometry.area
+gdf["area_tot_m2"] = gdf.geometry.area
 
 # Export do banco consolidado
 gdf.to_file(out_path, driver="GPKG")
 print(f"OK: {out_path.name}")
 
-# LIXEIRO 
+# LIXEIRO
 
 print(f"[Limpeza] Executando remoção de rasters intermediários para {tile_id}...")
 
 arquivos_para_deletar = [
-#    files["mds"],
-#    files["mdt"]
+    files["mds"],
+    files["mdt"],
     files["ndsm"],
     files["slope"],
-    files["aspect"]
+    files["aspect"],
 ]
 
 removidos = 0
@@ -149,4 +169,7 @@ for caminho in arquivos_para_deletar:
     except Exception as e:
         print(f"  [Aviso] Falha ao deletar {caminho.name}: {e}")
 
-print(f"[Limpeza] Concluída. {removidos} rasters apagados. Apenas a irradiação e o gpkg foram mantidos!\n")
+print(
+    f"[Limpeza] Concluída. {removidos} rasters apagados. Apenas a irradiação e o gpkg foram mantidos!\n"
+)
+

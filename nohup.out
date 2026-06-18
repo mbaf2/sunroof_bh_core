@@ -1,0 +1,348 @@
+>> Modo --all ativado: Mapeando todos os arquivos .xyz na pasta MDS...
+------------------------------------------------------------
+ORQUESTRADOR PARALELO - RASTER 0.25m
+------------------------------------------------------------
+>> Iniciando processamento paralelo assíncrono.
+>> Threads dedicadas na CPU: 9 | Resolução: 0.25m
+>> Total de quadrantes na fila: 347
+------------------------------------------------------------
+Quadrante 4341 processado com sucesso em 21.8s.
+Quadrante 4245 processado com sucesso em 22.2s.
+Quadrante 4439 processado com sucesso em 22.4s.
+Quadrante 4345 processado com sucesso em 30.2s.
+Traceback (most recent call last):
+  File "/run/media/mbaf2/027CE7087CE6F577/Users/Mauro Batista/Desktop/qgis/projeto_bh/Python/sunroof_bh_core/lote_orchestrator.py", line 166, in <module>
+    for futuro in as_completed(futuros):
+                  ~~~~~~~~~~~~^^^^^^^^^
+  File "/usr/lib/python3.14/concurrent/futures/_base.py", line 237, in as_completed
+    waiter.event.wait(wait_timeout)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/threading.py", line 670, in wait
+    signaled = self._cond.wait(timeout)
+  File "/usr/lib/python3.14/threading.py", line 369, in wait
+    waiter.acquire()
+    ~~~~~~~~~~~~~~^^
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/run/media/mbaf2/027CE7087CE6F577/Users/Mauro Batista/Desktop/qgis/projeto_bh/Python/sunroof_bh_core/lote_orchestrator.py", line 163, in <module>
+    with ProcessPoolExecutor(max_workers=args.workers) as executor:
+         ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/concurrent/futures/_base.py", line 667, in __exit__
+    self.shutdown(wait=True)
+    ~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/usr/lib/python3.14/concurrent/futures/process.py", line 865, in shutdown
+    self._executor_manager_thread.join()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/threading.py", line 1133, in join
+    self._os_thread_handle.join(timeout)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyboardInterrupt
+Exception ignored on threading shutdown:
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/threading.py", line 1577, in _shutdown
+    atexit_call()
+  File "/usr/lib/python3.14/threading.py", line 1548, in <lambda>
+    _threading_atexits.append(lambda: func(*arg, **kwargs))
+  File "/usr/lib/python3.14/concurrent/futures/process.py", line 106, in _python_exit
+    t.join()
+  File "/usr/lib/python3.14/threading.py", line 1133, in join
+    self._os_thread_handle.join(timeout)
+KeyboardInterrupt: 
+Exception ignored in atexit callback <function _exit_function at 0x7f8844ead380>:
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/multiprocessing/util.py", line 428, in _exit_function
+    p.join()
+  File "/usr/lib/python3.14/multiprocessing/process.py", line 156, in join
+    res = self._popen.wait(timeout)
+  File "/usr/lib/python3.14/multiprocessing/popen_fork.py", line 44, in wait
+    return self.poll(os.WNOHANG if timeout == 0.0 else 0)
+  File "/usr/lib/python3.14/multiprocessing/popen_forkserver.py", line 65, in poll
+    if not wait([self.sentinel], timeout):
+  File "/usr/lib/python3.14/multiprocessing/connection.py", line 1190, in wait
+    ready = selector.select(timeout)
+  File "/usr/lib/python3.14/selectors.py", line 398, in select
+    fd_event_list = self._selector.poll(timeout)
+KeyboardInterrupt: 
+>> Modo --all ativado: Mapeando todos os arquivos .xyz na pasta MDS...
+------------------------------------------------------------
+ORQUESTRADOR PARALELO - RASTER 0.25m
+------------------------------------------------------------
+>> Iniciando processamento paralelo assíncrono.
+>> Threads dedicadas na CPU: 112 | Resolução: 0.25m
+>> Total de quadrantes na fila: 347
+------------------------------------------------------------
+Traceback (most recent call last):
+  File "/run/media/mbaf2/027CE7087CE6F577/Users/Mauro Batista/Desktop/qgis/projeto_bh/Python/sunroof_bh_core/lote_orchestrator.py", line 164, in <module>
+    futuros = {executor.submit(processar_single_tile, tile): tile for tile in TILES}
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/concurrent/futures/process.py", line 816, in submit
+    self._adjust_process_count()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/concurrent/futures/process.py", line 775, in _adjust_process_count
+    self._spawn_process()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/concurrent/futures/process.py", line 793, in _spawn_process
+    p.start()
+    ~~~~~~~^^
+  File "/usr/lib/python3.14/multiprocessing/process.py", line 121, in start
+    self._popen = self._Popen(self)
+                  ~~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.14/multiprocessing/context.py", line 306, in _Popen
+    return Popen(process_obj)
+  File "/usr/lib/python3.14/multiprocessing/popen_forkserver.py", line 35, in __init__
+    super().__init__(process_obj)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/multiprocessing/popen_fork.py", line 20, in __init__
+    self._launch(process_obj)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/multiprocessing/popen_forkserver.py", line 51, in _launch
+    self.sentinel, w = forkserver.connect_to_new_process(self._fds)
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/usr/lib/python3.14/multiprocessing/forkserver.py", line 98, in connect_to_new_process
+    resource_tracker.getfd()]
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/multiprocessing/resource_tracker.py", line 207, in getfd
+    self.ensure_running()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/multiprocessing/resource_tracker.py", line 215, in ensure_running
+    return self._ensure_running_and_write()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/multiprocessing/resource_tracker.py", line 304, in _ensure_running_and_write
+    self._write(to_send)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "/usr/lib/python3.14/multiprocessing/resource_tracker.py", line 342, in _write
+    nbytes = os.write(self._fd, msg)
+KeyboardInterrupt
+>> Modo --all ativado: Mapeando todos os arquivos .xyz na pasta MDS...
+------------------------------------------------------------
+ORQUESTRADOR PARALELO - RASTER 0.25m
+------------------------------------------------------------
+>> Iniciando processamento paralelo assíncrono.
+>> Threads dedicadas na CPU: 12 | Resolução: 0.25m
+>> Total de quadrantes na fila: 347
+------------------------------------------------------------
+Process ForkServerProcess-4:
+Quadrante 4341 processado com sucesso em 28.5s.
+Quadrante 4439 processado com sucesso em 29.8s.
+Quadrante 4245 processado com sucesso em 30.2s.
+Quadrante 4345 processado com sucesso em 41.6s.
+Quadrante 4243 processado com sucesso em 52.7s.
+Quadrante 4538 processado com sucesso em 99.4s.
+Quadrante 4440 processado com sucesso em 159.0s.
+Quadrante 4442 processado com sucesso em 170.1s.
+Quadrante 4441 processado com sucesso em 193.0s.
+Quadrante 4344 processado com sucesso em 198.0s.
+Quadrante 4342 processado com sucesso em 205.5s.
+Quadrante 4343 processado com sucesso em 212.0s.
+    [Falha] Script intensity.py quebrou no Quadrante 4539!
+--- LOG DE ERRO (STDERR) ---
+
+----------------------------------------
+[Interrupção] A esteira descartou o tile 4539 devido ao erro acima.
+Quadrante 4244 processado com sucesso em 229.1s.
+Quadrante 4443 processado com sucesso em 247.2s.
+Quadrante 4545 processado com sucesso em 95.6s.
+Quadrante 4550 processado com sucesso em 120.1s.
+Quadrante 4540 processado com sucesso em 292.2s.
+Quadrante 4548 processado com sucesso em 144.2s.
+Quadrante 4541 processado com sucesso em 258.6s.
+    [Falha] Script filter.py quebrou no Quadrante 4557!
+--- LOG DE ERRO (STDERR) ---
+Aviso: 4557 vazio. Pulando.
+
+----------------------------------------
+[Interrupção] A esteira descartou o tile 4557 devido ao erro acima.
+Quadrante 4556 processado com sucesso em 57.4s.
+Quadrante 4444 processado com sucesso em 370.9s.
+Quadrante 4544 processado com sucesso em 214.4s.
+Quadrante 4542 processado com sucesso em 265.7s.
+Quadrante 4553 processado com sucesso em 149.4s.
+Quadrante 4543 processado com sucesso em 276.1s.
+    [Falha] Script filter.py quebrou no Quadrante 4635!
+--- LOG DE ERRO (STDERR) ---
+Aviso: 4635 vazio. Pulando.
+
+----------------------------------------
+[Interrupção] A esteira descartou o tile 4635 devido ao erro acima.
+Quadrante 4551 processado com sucesso em 222.5s.
+Quadrante 4552 processado com sucesso em 177.0s.
+Quadrante 4549 processado com sucesso em 242.6s.
+    [Falha] Script dsm.py quebrou no Quadrante 4640!
+--- LOG DE ERRO (STDERR) ---
+
+----------------------------------------
+[Interrupção] A esteira descartou o tile 4640 devido ao erro acima.
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/run/media/mbaf2/027CE7087CE6F577/Users/Mauro Batista/Desktop/qgis/projeto_bh/Python/sunroof_bh_core/lote_orchestrator.py", line 166, in <module>
+    for futuro in as_completed(futuros):
+                  ~~~~~~~~~~~~^^^^^^^^^
+  File "/usr/lib/python3.14/concurrent/futures/_base.py", line 237, in as_completed
+    waiter.event.wait(wait_timeout)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/threading.py", line 670, in wait
+    signaled = self._cond.wait(timeout)
+  File "/usr/lib/python3.14/threading.py", line 369, in wait
+    waiter.acquire()
+    ~~~~~~~~~~~~~~^^
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/run/media/mbaf2/027CE7087CE6F577/Users/Mauro Batista/Desktop/qgis/projeto_bh/Python/sunroof_bh_core/lote_orchestrator.py", line 163, in <module>
+    with ProcessPoolExecutor(max_workers=args.workers) as executor:
+         ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/concurrent/futures/_base.py", line 667, in __exit__
+    self.shutdown(wait=True)
+    ~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/usr/lib/python3.14/concurrent/futures/process.py", line 865, in shutdown
+    self._executor_manager_thread.join()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/threading.py", line 1133, in join
+    self._os_thread_handle.join(timeout)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyboardInterrupt
+  File "/usr/lib/python3.14/concurrent/futures/process.py", line 254, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/run/media/mbaf2/027CE7087CE6F577/Users/Mauro Batista/Desktop/qgis/projeto_bh/Python/sunroof_bh_core/lote_orchestrator.py", line 65, in processar_single_tile
+    proc = subprocess.run(
+        [sys.executable, str(BASE_DIR / script), tile_id],
+    ...<3 lines>...
+        env=env_trabalho,
+    )
+  File "/usr/lib/python3.14/subprocess.py", line 557, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/subprocess.py", line 1211, in communicate
+    stderr = self.stderr.read()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/multiprocessing/process.py", line 320, in _bootstrap
+    self.run()
+    ~~~~~~~~^^
+  File "/usr/lib/python3.14/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/concurrent/futures/process.py", line 256, in _process_worker
+    exc = _ExceptionWithTraceback(e, e.__traceback__)
+  File "/usr/lib/python3.14/concurrent/futures/process.py", line 137, in __init__
+    tb = ''.join(format_exception(type(exc), exc, tb))
+                 ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/traceback.py", line 158, in format_exception
+    te = TracebackException(type(value), value, tb, limit=limit, compact=True)
+  File "/usr/lib/python3.14/traceback.py", line 1059, in __init__
+    self.stack = StackSummary._extract_from_extended_frame_gen(
+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        _walk_tb_with_full_positions(exc_traceback),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        limit=limit, lookup_lines=lookup_lines,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        capture_locals=capture_locals)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/traceback.py", line 506, in _extract_from_extended_frame_gen
+    f.line
+  File "/usr/lib/python3.14/traceback.py", line 375, in line
+    self._set_lines()
+    ~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/traceback.py", line 353, in _set_lines
+    line = linecache.getline(self.filename, lineno).rstrip()
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/linecache.py", line 26, in getline
+    lines = getlines(filename, module_globals)
+  File "/usr/lib/python3.14/linecache.py", line 41, in getlines
+    return updatecache(filename, module_globals)
+  File "/usr/lib/python3.14/linecache.py", line 187, in updatecache
+    with tokenize.open(fullname) as fp:
+         ~~~~~~~~~~~~~^^^^^^^^^^
+  File "/usr/lib/python3.14/tokenize.py", line 465, in open
+    text = TextIOWrapper(buffer, encoding, line_buffering=True)
+  File "<frozen codecs>", line 313, in __init__
+  File "<frozen codecs>", line 263, in __init__
+KeyboardInterrupt
+Exception ignored on threading shutdown:
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/threading.py", line 1577, in _shutdown
+    atexit_call()
+  File "/usr/lib/python3.14/threading.py", line 1548, in <lambda>
+    _threading_atexits.append(lambda: func(*arg, **kwargs))
+  File "/usr/lib/python3.14/concurrent/futures/process.py", line 106, in _python_exit
+    t.join()
+  File "/usr/lib/python3.14/threading.py", line 1133, in join
+    self._os_thread_handle.join(timeout)
+KeyboardInterrupt: 
+>> Modo --all ativado: Mapeando todos os arquivos .xyz na pasta MDS...
+------------------------------------------------------------
+ORQUESTRADOR PARALELO - RASTER 0.25m
+------------------------------------------------------------
+>> Iniciando processamento paralelo assíncrono.
+>> Threads dedicadas na CPU: 12 | Resolução: 0.25m
+>> Total de quadrantes na fila: 347
+------------------------------------------------------------
+Traceback (most recent call last):
+  File "/run/media/mbaf2/027CE7087CE6F577/Users/Mauro Batista/Desktop/qgis/projeto_bh/Python/sunroof_bh_core/lote_orchestrator.py", line 166, in <module>
+    for futuro in as_completed(futuros):
+                  ~~~~~~~~~~~~^^^^^^^^^
+  File "/usr/lib/python3.14/concurrent/futures/_base.py", line 237, in as_completed
+    waiter.event.wait(wait_timeout)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/threading.py", line 670, in wait
+    signaled = self._cond.wait(timeout)
+  File "/usr/lib/python3.14/threading.py", line 369, in wait
+    waiter.acquire()
+    ~~~~~~~~~~~~~~^^
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/run/media/mbaf2/027CE7087CE6F577/Users/Mauro Batista/Desktop/qgis/projeto_bh/Python/sunroof_bh_core/lote_orchestrator.py", line 163, in <module>
+    with ProcessPoolExecutor(max_workers=args.workers) as executor:
+         ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/concurrent/futures/_base.py", line 667, in __exit__
+    self.shutdown(wait=True)
+    ~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/usr/lib/python3.14/concurrent/futures/process.py", line 865, in shutdown
+    self._executor_manager_thread.join()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/threading.py", line 1133, in join
+    self._os_thread_handle.join(timeout)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyboardInterrupt
+Exception ignored on threading shutdown:
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/threading.py", line 1577, in _shutdown
+    atexit_call()
+  File "/usr/lib/python3.14/threading.py", line 1548, in <lambda>
+    _threading_atexits.append(lambda: func(*arg, **kwargs))
+  File "/usr/lib/python3.14/concurrent/futures/process.py", line 106, in _python_exit
+    t.join()
+  File "/usr/lib/python3.14/threading.py", line 1133, in join
+    self._os_thread_handle.join(timeout)
+KeyboardInterrupt: 
+Exception ignored while calling deallocator <function Popen.__del__ at 0x7f283cd5ada0>:
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/subprocess.py", line 1132, in __del__
+    def __del__(self, _maxsize=sys.maxsize, _warn=warnings.warn):
+KeyboardInterrupt: 
+Exception ignored in atexit callback <function _exit_function at 0x7f5644ead380>:
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/multiprocessing/util.py", line 428, in _exit_function
+    p.join()
+  File "/usr/lib/python3.14/multiprocessing/process.py", line 156, in join
+    res = self._popen.wait(timeout)
+  File "/usr/lib/python3.14/multiprocessing/popen_fork.py", line 44, in wait
+    return self.poll(os.WNOHANG if timeout == 0.0 else 0)
+  File "/usr/lib/python3.14/multiprocessing/popen_forkserver.py", line 65, in poll
+    if not wait([self.sentinel], timeout):
+  File "/usr/lib/python3.14/multiprocessing/connection.py", line 1190, in wait
+    ready = selector.select(timeout)
+  File "/usr/lib/python3.14/selectors.py", line 398, in select
+    fd_event_list = self._selector.poll(timeout)
+KeyboardInterrupt: 

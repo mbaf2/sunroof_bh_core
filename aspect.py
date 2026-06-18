@@ -18,7 +18,7 @@ f_slp = work_dir / f"RASTER_Slope_{tile}.tif"
 f_out = work_dir / f"RASTER_Aspect_{tile}.tif"
 
 if not f_mds.exists() or not f_slp.exists():
-    sys.exit(f"Abort: Insumos ausentes em {work_dir}")
+    sys.exit(f"Abort: Dados ausentes em {work_dir}")
 
 print(f">> Calculando Orientação (Aspect): {tile}")
 

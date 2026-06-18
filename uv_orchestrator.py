@@ -371,7 +371,7 @@ tiles = [
           "6061"
          ]
 
-GRID_RES = 1
+GRID_RES = 0.25
 
 pipeline = [
     "dsm.py", "dtm.py", 

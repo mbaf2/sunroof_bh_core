@@ -7,6 +7,7 @@ import rasterio
 from rasterio.transform import from_origin
 from scipy.interpolate import NearestNDInterpolator
 from scipy.ndimage import gaussian_filter
+from scipy.spatial import cKDTree
   
 # Setup de execução
 tile = sys.argv[1] if len(sys.argv) > 1 else "5250"
@@ -54,6 +55,14 @@ m_mds = interp(gx, gy)
 # Mantém as quinas dos prédios razoavelmente firmes e tira o serrilhado do teto.
 print("   - Aplicando suavização Gaussiana na matriz...")
 m_mds_suave = gaussian_filter(m_mds, sigma=1.0)
+
+arvore = cKDTree(np.column_stack((df.X, df.Y)))
+grid_pontos = np.column_stack((gx.ravel(), gy.ravel()))
+distancias, _ = arvore.query(grid_pontos, k=1)
+
+matriz_distancias = distancias.reshape(gx.shape)
+
+m_mds_suave[matriz_distancias > 1.0] = -9999.0
 
 # ==============================================================================
 # GEOTRANSFORM AFIM AJUSTADO E CORREÇÃO DE SHAPE
